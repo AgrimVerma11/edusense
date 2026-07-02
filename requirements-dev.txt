@@ -1,0 +1,12 @@
+# Development and analysis tooling.
+# Kept separate from requirements.txt so the deployed API image stays lean
+# (the notebook stack is never installed in the production container).
+-r requirements.txt
+
+jupyterlab==4.2.1
+notebook==7.2.0
+ipykernel==6.29.4
+
+# Evaluated as a regression candidate (notebook 05); XGBoost outperformed it, so
+# it stays a dev-only comparison and is not a production dependency.
+lightgbm==4.3.0

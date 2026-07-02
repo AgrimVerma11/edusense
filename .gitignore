@@ -1,0 +1,49 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Raw and processed data are not committed; sources are documented in README.
+data/raw/*.csv
+data/processed/*.csv
+data/processed/validation_sets/*.csv
+
+# Trained model artifacts are committed so the API can be deployed without
+# retraining (they are small and regenerable from the pipeline).
+
+# Generated analysis outputs
+outputs/plots/*.png
+outputs/plots/*.html
+outputs/reports/*.txt
+outputs/reports/*.json
+outputs/reports/*.csv
+outputs/reports/*.html
+
+# Documentation is kept local for now (not published yet)
+docs/
+
+# Node / frontend build artifacts
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# OS and editor cruft
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
