@@ -114,8 +114,8 @@ def _validate_columns(name: str, df: pd.DataFrame) -> None:
         df: Loaded dataframe.
 
     Raises:
-        DatasetValidationError: If required columns are missing, or — for the
-            primary dataset — if any column is not classified in config.
+        DatasetValidationError: If required columns are missing, or (for the
+            primary dataset) if any column is not classified in config.
     """
     required = REQUIRED_COLUMNS.get(name, set())
     actual = set(df.columns)

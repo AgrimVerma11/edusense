@@ -1,13 +1,11 @@
-"""Preprocessing pipeline for EduSense.
+"""Preprocessing for EduSense.
 
-The primary behavioral dataset (DS1) is transformed by
-:class:`BehavioralPreprocessor`, which engineers the ``procrastination_level``
-proxy, imputes nulls, encodes ordinal and nominal categoricals, and scales the
-continuous block. Every statistic (medians, scaler, encoder categories) is
-learned on the training split only and serialised for inference.
-
-Module-level helpers prepare the DS3 regression data and the DS2/DS4
-cross-dataset validation sets used in Step 11.
+BehavioralPreprocessor turns the DS1 behavioural survey into a model-ready
+matrix: it builds the procrastination proxy, fills the gaps, encodes the ordinal
+and nominal columns, and scales the numeric block. Everything it learns
+(medians, scaler, one-hot categories) comes from the training split only and is
+saved for inference. The functions after it prep the DS3 regression data and the
+DS2/DS4 validation sets for the cross-dataset step.
 """
 
 import logging
@@ -27,17 +25,10 @@ logger = logging.getLogger(__name__)
 
 
 def derive_procrastination_level(frame: pd.DataFrame) -> pd.Series:
-    """Engineer the ordinal ``procrastination_level`` proxy.
+    """Build the ordinal procrastination_level proxy.
 
-    Sums the per-feature component scores defined in
-    ``config.PROCRASTINATION_COMPONENT_SCORES`` and bins the total into
-    Low / Medium / High using ``config.PROCRASTINATION_SCORE_BINS``.
-
-    Args:
-        frame: Dataframe containing the procrastination source columns.
-
-    Returns:
-        Categorical series of procrastination levels aligned to ``frame``.
+    Adds up the per-feature component scores from config and bins the total into
+    Low/Medium/High. Returns a categorical series lined up with the frame.
     """
     score = pd.Series(0.0, index=frame.index)
     for column, mapping in config.PROCRASTINATION_COMPONENT_SCORES.items():
@@ -50,12 +41,11 @@ def derive_procrastination_level(frame: pd.DataFrame) -> pd.Series:
 
 
 class BehavioralPreprocessor:
-    """Fit/transform pipeline for the primary behavioral dataset (DS1).
+    """Fit/transform pipeline for the DS1 behavioural dataset.
 
-    Produces a fully numeric, model-ready feature matrix: the continuous block
-    (native numerics + ordinal-encoded features + the engineered procrastination
-    level) is median-imputed and standard-scaled, and the nominal features are
-    one-hot encoded. All learned state is fit on training data only.
+    The output is fully numeric: the continuous block (numerics + ordinal codes +
+    the procrastination level) is median-imputed and scaled, and the nominal
+    columns are one-hot encoded. Everything learned is fit on training data only.
     """
 
     def __init__(self) -> None:
@@ -75,15 +65,9 @@ class BehavioralPreprocessor:
         self.feature_names_: list[str] = []
 
     def _engineer(self, frame: pd.DataFrame) -> pd.DataFrame:
-        """Derive procrastination and encode ordinals to integer codes.
+        """Derive procrastination and turn the ordinals into integer codes.
 
-        Args:
-            frame: Raw DS1 dataframe.
-
-        Returns:
-            Copy with ordinal features replaced by their integer codes and the
-            engineered procrastination code added. Nominal features are left as
-            raw labels for one-hot encoding.
+        Nominal columns are left as raw labels for the one-hot step.
         """
         work = frame.copy()
         work[config.PROCRASTINATION_FEATURE] = derive_procrastination_level(work)
@@ -99,14 +83,7 @@ class BehavioralPreprocessor:
         return work
 
     def fit(self, frame: pd.DataFrame) -> "BehavioralPreprocessor":
-        """Learn imputation medians, scaler, and encoder from training data.
-
-        Args:
-            frame: Raw DS1 training split.
-
-        Returns:
-            The fitted preprocessor.
-        """
+        """Learn the medians, scaler, and encoder from the training split."""
         work = self._engineer(frame)
 
         self.medians_ = work[self.continuous_features].median()
@@ -133,14 +110,10 @@ class BehavioralPreprocessor:
             raise RuntimeError("BehavioralPreprocessor must be fitted before use.")
 
     def transform(self, frame: pd.DataFrame) -> tuple[pd.DataFrame, Optional[pd.Series]]:
-        """Transform raw DS1 rows into the model-ready feature matrix.
+        """Turn raw DS1 rows into the model-ready matrix.
 
-        Args:
-            frame: Raw DS1 dataframe (train, test, or a single inference row).
-
-        Returns:
-            Tuple of the feature matrix and the encoded target series (or None
-            if the target column is absent, as during inference).
+        Returns the feature matrix and the encoded target, or None for the target
+        when its column isn't present (as at inference time).
         """
         self._check_fitted()
         work = self._engineer(frame)
@@ -160,20 +133,14 @@ class BehavioralPreprocessor:
         return features, target
 
     def fit_transform(self, frame: pd.DataFrame) -> tuple[pd.DataFrame, Optional[pd.Series]]:
-        """Fit on the data, then return its transformed feature matrix."""
+        """Fit on the frame, then return its transformed matrix."""
         return self.fit(frame).transform(frame)
 
     def cluster_matrix(self, frame: pd.DataFrame) -> pd.DataFrame:
-        """Return the imputed, unscaled clustering feature subset.
+        """The imputed, unscaled clustering features.
 
-        The clustering layer applies its own scaler, so this exposes the
-        engineered and median-imputed cluster features without standardisation.
-
-        Args:
-            frame: Raw DS1 dataframe.
-
-        Returns:
-            Dataframe of the configured cluster features, median-imputed.
+        Clustering scales these itself, so they come back engineered and
+        median-imputed but not standardised.
         """
         self._check_fitted()
         work = self._engineer(frame)
@@ -181,7 +148,7 @@ class BehavioralPreprocessor:
         return imputed[config.DS1_CLUSTER_FEATURES].copy()
 
     def save(self, path: Path = config.PREPROCESSOR_PATH) -> None:
-        """Serialise the fitted preprocessor to disk."""
+        """Save the fitted preprocessor."""
         self._check_fitted()
         path.parent.mkdir(parents=True, exist_ok=True)
         joblib.dump(self, path)
@@ -189,19 +156,15 @@ class BehavioralPreprocessor:
 
     @classmethod
     def load(cls, path: Path = config.PREPROCESSOR_PATH) -> "BehavioralPreprocessor":
-        """Load a fitted preprocessor from disk."""
+        """Load a saved preprocessor."""
         return joblib.load(path)
 
 
 def prepare_primary_data(save: bool = True) -> dict:
-    """Split DS1, fit the preprocessor on the train split, and transform both.
+    """Split DS1, fit the preprocessor on the train split, transform both.
 
-    Args:
-        save: If True, persist the fitted preprocessor and processed CSVs.
-
-    Returns:
-        Dict with keys ``X_train``, ``X_test``, ``y_train``, ``y_test``, and
-        ``preprocessor``.
+    Optionally saves the fitted preprocessor and the processed CSVs. Returns the
+    train/test splits plus the preprocessor.
     """
     raw = load_dataset("behavioral_analytics")
     train_raw, test_raw = train_test_split(
@@ -243,14 +206,8 @@ def prepare_primary_data(save: bool = True) -> dict:
 def prepare_regression_data(save: bool = True) -> dict:
     """Split DS3 into the regression train/test sets.
 
-    Scaling is applied inside the regression model pipelines (Step 8), so the
-    splits here are the raw numeric features and target.
-
-    Args:
-        save: If True, persist the processed CSVs.
-
-    Returns:
-        Dict with keys ``X_train``, ``X_test``, ``y_train``, ``y_test``.
+    Scaling happens inside the model pipelines later, so these are just the raw
+    numeric features and the target.
     """
     raw = load_dataset("performance_prediction")
     features = raw[config.DS3_FEATURES]
@@ -293,18 +250,11 @@ _VALIDATION_SOURCES = {
 
 
 def prepare_validation_set(dataset_key: str, save: bool = True) -> pd.DataFrame:
-    """Extract a cross-dataset validation set in canonical feature space.
+    """Pull one cross-dataset validation set into canonical feature space.
 
-    Selects the columns that map to the shared canonical features for the given
-    dataset, renames them to the canonical names, and appends the exam-score
-    target as ``exam_score``. DS2 rows are de-duplicated first.
-
-    Args:
-        dataset_key: ``"ds2"`` (negative control) or ``"ds4"`` (holdout).
-        save: If True, persist the extracted CSV.
-
-    Returns:
-        Dataframe of shared canonical features plus the ``exam_score`` target.
+    Keeps the columns that map to the shared canonical features, renames them to
+    the canonical names, and appends the exam score as exam_score. DS2 is
+    de-duplicated first. dataset_key is 'ds2' (control) or 'ds4' (holdout).
     """
     if dataset_key not in _VALIDATION_SOURCES:
         raise KeyError(f"Unsupported validation dataset '{dataset_key}'.")
@@ -340,7 +290,7 @@ def prepare_validation_set(dataset_key: str, save: bool = True) -> pd.DataFrame:
 
 
 def main() -> None:
-    """Run the full preprocessing pipeline and write all processed artifacts."""
+    """Run the whole preprocessing pipeline and write every processed file."""
     logging.basicConfig(
         level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s"
     )
