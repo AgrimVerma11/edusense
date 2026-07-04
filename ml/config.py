@@ -1,19 +1,13 @@
-"""Central configuration for the EduSense ML pipeline.
+"""Central config for the EduSense pipeline.
 
-Every path, constant, feature list, label map, ordinal ordering, and model
-hyperparameter lives here so that no magic values are hard-coded in the
-pipeline modules. Column names reflect the real dataset schema discovered in
-Step 0 (see ``data/discover_schema.py``), not the approximations from initial
-planning.
+All the paths, constants, feature lists, label maps, ordinal orderings, and model
+hyperparameters live here, so nothing is hard-coded in the pipeline modules. The
+column names are the real ones found in Step 0 (see data/discover_schema.py), not
+the guesses from the original plan.
 
-Conventions:
-    * ``DS1_*`` constants describe the primary behavioral dataset
-      (``behavioral_analytics.csv``) used to train clustering and risk
-      classification.
-    * ``DS2_*`` constants describe the volume dataset (``zenodo_merged.csv``)
-      used to train the score regressor.
-    * ``DS3_*`` / ``DS4_*`` constants describe the cross-validation and holdout
-      datasets used only for external validation.
+Naming: DS1_* is the primary behavioural dataset (clustering and risk
+classification), DS3_* is the regression training source, DS2_* is the regression
+negative control, and DS4_* is the untouched holdout.
 """
 
 from pathlib import Path
@@ -448,3 +442,135 @@ RISK_PALETTE = {
 }
 # Ordered Low -> Moderate -> High, for plots that take a sequential palette.
 RISK_PALETTE_LIST = ["#1D9E75", "#EF9F27", "#D85A30"]
+
+# ===========================================================================
+# User-facing framing (two-audience output)
+# ===========================================================================
+# Technical fields (risk_level, probabilities) are returned unchanged for the
+# API and for engineers. The strings below are the student-facing layer: a
+# reflective, non-diagnostic wrapper that keeps the same specific message
+# without reading as a clinical or definitive verdict.
+
+DISCLAIMER = (
+    "EduSense is a self-reflection aid based on self-reported study habits and "
+    "wellbeing. It is not a medical, psychological, or academic assessment and "
+    "does not predict any individual's grades. Use it to reflect and to start a "
+    "conversation with a mentor. If you are feeling distressed, please contact "
+    "your institution's counselling service."
+)
+
+RISK_FRAMING = {
+    "Low Risk": {
+        "headline": "Your current habits are working in your favour.",
+        "reflection": "Your study patterns line up with students who tend to stay "
+                      "on track. The suggestions below are about protecting and "
+                      "building on that.",
+    },
+    "Moderate Risk": {
+        "headline": "A few patterns are worth your attention.",
+        "reflection": "You sit in a middle band: some strong areas, and a few that "
+                      "could pull your results down if left unchanged. The drivers "
+                      "below show exactly which ones.",
+    },
+    "High Risk": {
+        "headline": "Your current patterns line up with a higher-risk profile.",
+        "reflection": "This reflects habits, not ability, and every driver below is "
+                      "something you can change. Treat it as a prompt to reflect and "
+                      "to talk to a mentor, not a verdict on how you will do.",
+    },
+}
+SCORE_NOTE = "Indicative trajectory if your current habits continue, not a grade prediction."
+
+# Student-facing cluster names (softer than the internal/technical names).
+CLUSTER_DISPLAY_NAMES = {
+    0: "Capable but Coasting",
+    1: "Driven Achiever",
+    2: "Focused High Performer",
+    3: "Under Pressure",
+}
+
+# ===========================================================================
+# Inference feature mapping: DS1 behavioural inputs -> DS3 regression features
+# ===========================================================================
+# The regressor trains on DS3's numeric features, but a student is described in
+# DS1 terms. These maps translate DS1 bands/levels into approximate DS3-scale
+# numeric values (midpoints). This is a documented inference approximation; the
+# predicted score is presented as indicative, not exact.
+STUDY_HOURS_DAILY_TO_NUMERIC = {
+    "Less than 1 hour": 3.0,
+    "1–2 hours": 6.0,
+    "More than 2 hours": 9.0,
+}
+ATTENDANCE_BAND_TO_NUMERIC = {
+    "Less than 50%": 40.0,
+    "50% – 65%": 57.0,
+    "66% – 75%": 70.0,
+    "76% – 85%": 80.0,
+    "Above 85%": 90.0,
+}
+SLEEP_BAND_TO_NUMERIC = {
+    "4–5 hours": 4.5,
+    "6–7 hours": 6.5,
+    "More than 8 hours": 8.5,
+}
+SCREEN_BAND_TO_INTERNET = {
+    "2–4 hours": 3.0,
+    "4–6 hours": 5.0,
+    "More than 6 hours": 7.0,
+}
+ASSIGNMENTS_ORDINAL_TO_COUNT = {
+    "Rarely": 4.0,
+    "Sometimes": 9.0,
+    "Often": 14.0,
+    "Always": 18.0,
+}
+CGPA_BAND_TO_PREVIOUS_SCORE = {
+    "5.0 – 6.9": 60.0,
+    "7.0 – 8.4": 77.0,
+    "8.5 – 9.4": 88.0,
+    "9.5 – 10.0": 95.0,
+}
+# Dataset-typical fallbacks when a band is missing at inference.
+DS3_FEATURE_DEFAULTS = {
+    "study_hours": 6.0,
+    "attendance": 75.0,
+    "sleep_hours": 6.5,
+    "internet_usage": 5.0,
+    "assignments_completed": 10.0,
+    "previous_score": 70.0,
+}
+
+# procrastination_level is engineered, not a raw input, so a "what-if" on it is
+# applied to its source behaviours instead (that is what "fixing procrastination"
+# actually means in the data).
+PROCRASTINATION_LEVEL_TO_SOURCES = {
+    "Low": {"study_consistency": "Mostly consistent", "tasks_on_time": "Always"},
+    "Medium": {"study_consistency": "Sometimes", "tasks_on_time": "Often"},
+    "High": {"study_consistency": "Rarely", "tasks_on_time": "Rarely"},
+}
+
+# Inference-time program aliases. The behavioural survey (DS1) was collected from
+# BSc/BCA and a few commerce students, so those are the only program_stream
+# categories the model has ever seen. The app is aimed at engineering and
+# computing students, who describe themselves with labels the survey never used
+# (B.Tech, B.E., M.Tech, MCA). Each of those is mapped to the nearest technical
+# category the model was trained on, so a B.Tech CSE student is scored against the
+# closest cohort rather than as an unknown stream. This is a documented
+# approximation: program_stream is a minor one-hot feature, so the effect on the
+# prediction is small, and any value not listed here passes through unchanged (an
+# unknown one is then safely ignored by the encoder).
+PROGRAM_STREAM_ALIASES = {
+    "B.Tech / B.E. (Computer Science)": "BSc Computer Science",
+    "B.Tech / B.E. (Information Technology)": "BSc IT",
+    "B.Tech / B.E. (Cyber Security)": "BSc Cyber Security",
+    "B.Tech / B.E. (Other branch)": "BSc Computer Science",
+    "M.Tech": "BSc Computer Science",
+    "MCA": "BCA",
+}
+
+# ===========================================================================
+# API metadata (reported by /health)
+# ===========================================================================
+API_VERSION = "1.0.0"
+DATASETS_TRAINED_ON = 4
+TOTAL_TRAINING_RECORDS = 31810
