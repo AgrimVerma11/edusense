@@ -1,0 +1,28 @@
+# Python caches and virtual envs
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ipynb_checkpoints/
+
+# The frontend is built and hosted separately (Vercel), not in the API image.
+frontend/
+node_modules/
+
+# Not needed at serve time
+notebooks/
+outputs/
+tests/
+docs/
+requirements-dev.txt
+
+# VCS, docs, and local files
+.git/
+.gitignore
+.dockerignore
+*.md
+.env
+.env.*

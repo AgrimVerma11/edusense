@@ -1,0 +1,17 @@
+# Render blueprint for the EduSense API.
+# Create the service from this file (New > Blueprint) or configure the same
+# fields by hand in the dashboard.
+services:
+  - type: web
+    name: edusense-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
+    envVars:
+      # The deployed frontend origin, so CORS accepts it and rejects everyone
+      # else. Update if the frontend URL changes.
+      - key: EDUSENSE_ALLOWED_ORIGINS
+        value: https://edusense.agrimverma.dev
+    # PORT is provided by Render automatically and read by the Dockerfile CMD.
