@@ -70,7 +70,14 @@ export default function Privacy() {
 
       <Section title="Contact">
         <p>
-          Questions about privacy can go to the maintainer via{' '}
+          Questions about privacy, or about how the tool works, can go to{' '}
+          <a
+            href="mailto:contact@edusense.agrimverma.dev"
+            className="font-medium text-brand-600 hover:underline"
+          >
+            contact@edusense.agrimverma.dev
+          </a>
+          . You can also reach the maintainer via{' '}
           <a
             href="https://github.com/AgrimVerma11"
             target="_blank"

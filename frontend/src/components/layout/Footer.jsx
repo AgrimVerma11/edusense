@@ -1,7 +1,9 @@
 import { Link } from 'react-router-dom';
+import { Mail } from 'lucide-react';
 import Logo from './Logo';
 
 const GITHUB_URL = 'https://github.com/AgrimVerma11';
+const CONTACT_EMAIL = 'contact@edusense.agrimverma.dev';
 
 // Brand icons kept as inline SVGs. lucide's brand glyphs are being retired, and
 // this keeps the three social marks visually consistent.
@@ -59,6 +61,13 @@ export default function Footer() {
               A self-reflection tool that helps students read their own study habits and wellbeing
               patterns, and turn them into small, doable next steps.
             </p>
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-ink-600 transition-colors hover:text-brand-600"
+            >
+              <Mail size={16} className="text-brand-500" />
+              {CONTACT_EMAIL}
+            </a>
           </div>
 
           {/* Explore */}
