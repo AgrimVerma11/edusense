@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import { STEPS } from '../config/schema';
 import { useAssessment } from '../context/AssessmentContext';
-import { predictStudent } from '../lib/api';
+import { predictStudent, wakeApi } from '../lib/api';
 import Field from '../components/form/Field';
 import Button from '../components/ui/Button';
 import ProgressBar from '../components/ui/ProgressBar';
@@ -30,6 +30,12 @@ export default function Assessment() {
   const step = STEPS[stepIndex];
   const isLast = stepIndex === STEPS.length - 1;
   const progress = ((stepIndex + 1) / STEPS.length) * 100;
+
+  useEffect(() => {
+    // Warm the API in case the student deep-linked straight to the assessment,
+    // so submitting does not wait on a cold start.
+    wakeApi();
+  }, []);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });

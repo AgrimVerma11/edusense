@@ -1,5 +1,7 @@
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { wakeApi } from '../lib/api';
 import {
   ArrowRight,
   ClipboardList,
@@ -71,6 +73,12 @@ const fadeUp = {
 };
 
 export default function Home() {
+  useEffect(() => {
+    // Nudge the free-tier API awake early, while the student reads and browses,
+    // so the first prediction is not the request that pays the cold-start cost.
+    wakeApi();
+  }, []);
+
   return (
     <div>
       {/* Hero */}
