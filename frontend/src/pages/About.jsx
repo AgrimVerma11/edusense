@@ -11,6 +11,7 @@ import {
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Disclaimer from '../components/ui/Disclaimer';
+import { usePageMeta } from '../lib/usePageMeta';
 
 const LAYERS = [
   {
@@ -59,6 +60,13 @@ function Section({ eyebrow, title, children }) {
 }
 
 export default function About() {
+  usePageMeta({
+    title: 'About | Firasa',
+    description:
+      'How Firasa works: four machine-learning layers, dual SHAP and LIME explanations, and cross-dataset validation. Built to read study habits honestly, not to judge.',
+    path: '/about',
+  });
+
   return (
     <div className="container-page py-12 sm:py-16">
       <div className="max-w-3xl">

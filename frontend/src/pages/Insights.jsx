@@ -10,6 +10,7 @@ import {
 } from 'recharts';
 import { Coffee, Rocket, Target, CloudRain, Users, ArrowRight, Database } from 'lucide-react';
 import { getClusterProfiles } from '../lib/api';
+import { usePageMeta } from '../lib/usePageMeta';
 import { featureLabel } from '../lib/format';
 import RadarAngleTick from '../components/dashboard/RadarAngleTick';
 import Card, { CardHeader } from '../components/ui/Card';
@@ -54,6 +55,13 @@ function buildComparative(clusters) {
 }
 
 export default function Insights() {
+  usePageMeta({
+    title: 'Insights | Firasa',
+    description:
+      'Aggregate, anonymous insights from Firasa: how study behaviour clusters into four profiles, which habits matter most, and how risk is distributed.',
+    path: '/insights',
+  });
+
   const [clusters, setClusters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

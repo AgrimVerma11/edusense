@@ -1,8 +1,15 @@
 import { Link } from 'react-router-dom';
 import { Home, Compass } from 'lucide-react';
 import Button from '../components/ui/Button';
+import { usePageMeta } from '../lib/usePageMeta';
 
 export default function NotFound() {
+  usePageMeta({
+    title: 'Page not found | Firasa',
+    description: 'That page could not be found.',
+    noindex: true,
+  });
+
   return (
     <div className="container-page flex min-h-[60vh] flex-col items-center justify-center py-20 text-center">
       <p className="text-7xl font-bold tracking-tight text-brand-200">404</p>
@@ -15,7 +22,7 @@ export default function NotFound() {
           <Home size={18} /> Back home
         </Button>
         <Button as={Link} to="/assessment" variant="secondary">
-          <Compass size={18} /> Start assessment
+          <Compass size={18} /> Start the reading
         </Button>
       </div>
     </div>

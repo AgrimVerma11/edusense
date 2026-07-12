@@ -2,6 +2,8 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { wakeApi } from '../lib/api';
+import { event } from '../lib/track';
+import { usePageMeta } from '../lib/usePageMeta';
 import {
   ArrowRight,
   ClipboardList,
@@ -57,7 +59,7 @@ const FEATURES = [
 ];
 
 const STATS = [
-  { value: '4', label: 'Study datasets' },
+  { value: '4', label: 'Independent datasets' },
   { value: '31,810', label: 'Student records' },
   { value: '4', label: 'Behavioural personas' },
   { value: '62', label: 'Behavioural signals' },
@@ -73,6 +75,13 @@ const fadeUp = {
 };
 
 export default function Home() {
+  usePageMeta({
+    title: 'Firasa - Academic Risk Intelligence',
+    description:
+      'Answer a few questions about how you study. Firasa names the one habit doing the most damage to your results, and what to do about it. Free, no signup, nothing stored.',
+    path: '/',
+  });
+
   useEffect(() => {
     // Nudge the free-tier API awake early, while the student reads and browses,
     // so the first prediction is not the request that pays the cold-start cost.
@@ -92,7 +101,7 @@ export default function Home() {
               variants={fadeUp}
               className="inline-flex items-center gap-2 rounded-full border border-brand-100 bg-brand-50 px-3 py-1 text-xs font-medium text-brand-700"
             >
-              <Layers size={14} /> Academic risk intelligence, built for reflection
+              <Layers size={14} /> Academic Risk Intelligence
             </motion.span>
 
             <motion.h1
@@ -102,7 +111,7 @@ export default function Home() {
               variants={fadeUp}
               className="mt-5 text-4xl font-bold tracking-tight text-ink-900 sm:text-5xl"
             >
-              Understand your study habits before they decide your semester.
+              See which habit is costing you the most.
             </motion.h1>
 
             <motion.p
@@ -112,9 +121,25 @@ export default function Home() {
               variants={fadeUp}
               className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-ink-500"
             >
-              Firasa reads the patterns in how you study, rest, and plan, then reflects them back
-              in plain language with a few small steps worth trying. It is a mirror for your
-              routine, not a verdict on your ability.
+              In about three minutes, Firasa reads how you study, rest, and plan, and names the one
+              habit doing the most damage to your results. A reading of your habits, in plain
+              language, not a verdict on your ability.
+            </motion.p>
+
+            <motion.p
+              initial="hidden"
+              animate="show"
+              custom={2.5}
+              variants={fadeUp}
+              className="mt-3"
+            >
+              <Link
+                to="/name"
+                onClick={() => event('behind_the_name', { from: 'home_hero' })}
+                className="text-sm font-medium text-brand-600 underline decoration-brand-200 underline-offset-4 transition-colors hover:text-brand-700"
+              >
+                Behind the name
+              </Link>
             </motion.p>
 
             <motion.div
@@ -124,10 +149,23 @@ export default function Home() {
               variants={fadeUp}
               className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row"
             >
-              <Button as={Link} to="/assessment" size="lg" className="w-full sm:w-auto">
-                Start your assessment <ArrowRight size={18} />
+              <Button
+                as={Link}
+                to="/assessment"
+                size="lg"
+                className="w-full sm:w-auto"
+                onClick={() => event('start_reading', { from: 'home_hero' })}
+              >
+                Start the reading <ArrowRight size={18} />
               </Button>
-              <Button as={Link} to="/insights" variant="secondary" size="lg" className="w-full sm:w-auto">
+              <Button
+                as={Link}
+                to="/insights"
+                variant="secondary"
+                size="lg"
+                className="w-full sm:w-auto"
+                onClick={() => event('explore_insights', { from: 'home_hero' })}
+              >
                 Explore the insights
               </Button>
             </motion.div>
@@ -139,7 +177,7 @@ export default function Home() {
               variants={fadeUp}
               className="mt-4 text-sm text-ink-400"
             >
-              Takes about three minutes. Nothing you enter is stored.
+              Free. No signup. Nothing stored.
             </motion.p>
           </div>
         </div>
@@ -239,8 +277,9 @@ export default function Home() {
               size="lg"
               variant="secondary"
               className="mt-7 border-transparent"
+              onClick={() => event('start_reading', { from: 'home_cta' })}
             >
-              Start your assessment <ArrowRight size={18} />
+              Start the reading <ArrowRight size={18} />
             </Button>
           </div>
         </div>

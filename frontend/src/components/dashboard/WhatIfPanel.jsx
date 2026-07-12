@@ -4,6 +4,7 @@ import { whatIf } from '../../lib/api';
 import { WHATIF_LEVERS } from '../../config/schema';
 import { toPercent, signed } from '../../lib/format';
 import { cn } from '../../lib/cn';
+import { event } from '../../lib/track';
 import Spinner from '../ui/Spinner';
 import RiskBadge from './RiskBadge';
 
@@ -45,6 +46,7 @@ export default function WhatIfPanel({ student }) {
   const [error, setError] = useState(null);
   // Guards against out-of-order responses when levers are changed quickly.
   const requestId = useRef(0);
+  const trackedRef = useRef(false);
 
   const activeChangesFrom = (chosen) =>
     Object.entries(chosen)
@@ -64,7 +66,13 @@ export default function WhatIfPanel({ student }) {
     setError(null);
     try {
       const data = await whatIf(student, modifications);
-      if (id === requestId.current) setResult(data);
+      if (id === requestId.current) {
+        setResult(data);
+        if (!trackedRef.current) {
+          trackedRef.current = true;
+          event('what_if_used');
+        }
+      }
     } catch (err) {
       if (id === requestId.current) {
         setError(err.message);

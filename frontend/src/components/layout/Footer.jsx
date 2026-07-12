@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { Mail } from 'lucide-react';
 import Logo from './Logo';
+import { event } from '../../lib/track';
 
 const GITHUB_URL = 'https://github.com/AgrimVerma11';
 const CONTACT_EMAIL = 'contact@firasa.agrimverma.dev';
@@ -46,6 +47,7 @@ const EXPLORE = [
   { to: '/assessment', label: 'Assessment' },
   { to: '/insights', label: 'Insights' },
   { to: '/about', label: 'About' },
+  { to: '/name', label: 'Behind the name' },
 ];
 
 export default function Footer() {
@@ -63,11 +65,13 @@ export default function Footer() {
             </p>
             <a
               href={`mailto:${CONTACT_EMAIL}`}
+              onClick={() => event('contact_click')}
               className="mt-5 inline-flex items-center gap-2 text-sm font-medium text-ink-600 transition-colors hover:text-brand-600"
             >
               <Mail size={16} className="text-brand-500" />
               {CONTACT_EMAIL}
             </a>
+            <p className="mt-4 text-xs text-ink-400">No signup. Nothing stored.</p>
           </div>
 
           {/* Explore */}

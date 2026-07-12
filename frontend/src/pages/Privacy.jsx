@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { ShieldCheck } from 'lucide-react';
+import { usePageMeta } from '../lib/usePageMeta';
 
 function Section({ title, children }) {
   return (
@@ -11,6 +12,13 @@ function Section({ title, children }) {
 }
 
 export default function Privacy() {
+  usePageMeta({
+    title: 'Privacy | Firasa',
+    description:
+      'Firasa collects no personal information, stores no answers on its servers, and sets no tracking cookies. Exactly how your data is handled.',
+    path: '/privacy',
+  });
+
   return (
     <div className="container-page max-w-3xl py-14">
       <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">

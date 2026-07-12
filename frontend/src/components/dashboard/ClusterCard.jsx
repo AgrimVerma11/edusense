@@ -16,7 +16,7 @@ export default function ClusterCard({ cluster }) {
         </span>
         <div>
           <p className="text-xs font-medium uppercase tracking-wide text-ink-400">
-            Your profile group
+            Your bearing
           </p>
           <h3 className="text-lg font-semibold text-ink-900">{display_name || name}</h3>
         </div>

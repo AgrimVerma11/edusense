@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FileText } from 'lucide-react';
+import { usePageMeta } from '../lib/usePageMeta';
 
 function Section({ title, children }) {
   return (
@@ -11,6 +12,13 @@ function Section({ title, children }) {
 }
 
 export default function Terms() {
+  usePageMeta({
+    title: 'Terms of use | Firasa',
+    description:
+      'The terms of use for Firasa, a self-reflection tool. What it is, what it is not, and how to use it well.',
+    path: '/terms',
+  });
+
   return (
     <div className="container-page max-w-3xl py-14">
       <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-brand-50 text-brand-600">

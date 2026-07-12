@@ -13,6 +13,8 @@ import FeatureImportanceChart from '../components/dashboard/FeatureImportanceCha
 import InterventionPanel from '../components/dashboard/InterventionPanel';
 import WhatIfPanel from '../components/dashboard/WhatIfPanel';
 import { toPercent } from '../lib/format';
+import { event } from '../lib/track';
+import { usePageMeta } from '../lib/usePageMeta';
 
 const reveal = {
   hidden: { opacity: 0, y: 14 },
@@ -27,6 +29,14 @@ const stagger = {
 export default function Results() {
   const { result, answers, reset } = useAssessment();
   const navigate = useNavigate();
+
+  usePageMeta({
+    title: 'Your reading | Firasa',
+    description:
+      'Your Firasa reading: a behavioural profile, an indicative trajectory, a risk signal, and the one habit to change first.',
+    path: '/results',
+    noindex: true,
+  });
 
   // Land here without a result (refresh, deep link) and there is nothing to
   // show, so send the student back to the questionnaire.
@@ -45,6 +55,7 @@ export default function Results() {
   } = result;
 
   const retake = () => {
+    event('retake');
     reset();
     navigate('/assessment');
   };
@@ -55,7 +66,7 @@ export default function Results() {
       <motion.div initial="hidden" animate="show" variants={reveal} className="max-w-3xl">
         <div className="flex flex-wrap items-center gap-3">
           <span className="text-xs font-semibold uppercase tracking-wide text-brand-600">
-            Your reflection
+            Your reading
           </span>
           <RiskBadge level={risk_level} size="lg" />
         </div>
@@ -130,7 +141,7 @@ export default function Results() {
 
         <Card>
           <CardHeader
-            title="What is influencing your risk"
+            title="What is carrying the most weight"
             subtitle="The habits weighing most on your signal right now."
             icon={Activity}
           />
@@ -142,7 +153,7 @@ export default function Results() {
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Card>
           <CardHeader
-            title="Small steps to try"
+            title="The sign"
             subtitle="Tied to your own answers, ranked by likely impact."
             icon={Target}
           />
@@ -155,7 +166,7 @@ export default function Results() {
 
         <Card>
           <CardHeader
-            title="Explore a change"
+            title="If this changed"
             subtitle="See how one shift could move your outlook."
             icon={Sliders}
           />

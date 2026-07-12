@@ -5,6 +5,8 @@ import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
 import { STEPS } from '../config/schema';
 import { useAssessment } from '../context/AssessmentContext';
 import { predictStudent, wakeApi } from '../lib/api';
+import { event } from '../lib/track';
+import { usePageMeta } from '../lib/usePageMeta';
 import Field from '../components/form/Field';
 import Button from '../components/ui/Button';
 import ProgressBar from '../components/ui/ProgressBar';
@@ -20,6 +22,14 @@ function isRequired(field) {
 export default function Assessment() {
   const navigate = useNavigate();
   const { answers, setAnswer, setResult, consented, acceptConsent } = useAssessment();
+
+  usePageMeta({
+    title: 'The reading | Firasa',
+    description:
+      'A short, private set of questions about how you study, sleep, and plan. Firasa turns your answers into a reading of your habits. No signup, nothing stored.',
+    path: '/assessment',
+    noindex: true,
+  });
 
   const [stepIndex, setStepIndex] = useState(0);
   const [direction, setDirection] = useState(1);
@@ -57,6 +67,10 @@ export default function Assessment() {
     try {
       const result = await predictStudent(answers);
       setResult(result);
+      event('reading_generated', {
+        risk: result?.risk_level,
+        persona: result?.cluster?.display_name,
+      });
       navigate('/results');
     } catch (err) {
       setSubmitError(err.message);
@@ -87,11 +101,22 @@ export default function Assessment() {
 
   // Gate the questionnaire behind the consent notice until it is acknowledged.
   if (!consented) {
-    return <ConsentGate onAccept={acceptConsent} />;
+    return (
+      <ConsentGate
+        onAccept={() => {
+          event('assessment_started');
+          acceptConsent();
+        }}
+      />
+    );
   }
 
   return (
     <div className="container-page max-w-2xl py-12 sm:py-16">
+      <p className="mb-6 text-xs font-semibold uppercase tracking-[0.2em] text-brand-500">
+        The reading
+      </p>
+
       {/* Progress header */}
       <div className="mb-8">
         <div className="mb-2 flex items-center justify-between text-sm">
@@ -150,7 +175,7 @@ export default function Assessment() {
             </>
           ) : isLast ? (
             <>
-              <Sparkles size={18} /> See my results
+              <Sparkles size={18} /> See what it finds
             </>
           ) : (
             <>

@@ -54,7 +54,7 @@ export default function ConsentGate({ onAccept }) {
           size="lg"
           className={cn('mt-6 w-full', !checked && 'opacity-60')}
         >
-          Begin assessment
+          Begin the reading
         </Button>
 
         <p className="mt-4 text-center text-xs text-ink-400">

@@ -5,6 +5,7 @@ import Logo from './Logo';
 import Button from '../ui/Button';
 import { useAssessment } from '../../context/AssessmentContext';
 import { cn } from '../../lib/cn';
+import { event } from '../../lib/track';
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
@@ -17,6 +18,7 @@ export default function Navbar() {
     ...(result ? [{ to: '/results', label: 'Your results', live: true }] : []),
     { to: '/insights', label: 'Insights' },
     { to: '/about', label: 'About' },
+    { to: '/name', label: 'The name' },
   ];
 
   return (
@@ -43,8 +45,14 @@ export default function Navbar() {
               {link.label}
             </NavLink>
           ))}
-          <Button as={Link} to="/assessment" size="sm" className="ml-2">
-            {result ? 'Retake' : 'Start assessment'}
+          <Button
+            as={Link}
+            to="/assessment"
+            size="sm"
+            className="ml-2"
+            onClick={() => event('start_reading', { from: 'nav', retake: Boolean(result) })}
+          >
+            {result ? 'Retake the reading' : 'Start the reading'}
           </Button>
         </div>
 
@@ -79,8 +87,16 @@ export default function Navbar() {
                 {link.label}
               </NavLink>
             ))}
-            <Button as={Link} to="/assessment" onClick={() => setOpen(false)} className="mt-1">
-              {result ? 'Retake' : 'Start assessment'}
+            <Button
+              as={Link}
+              to="/assessment"
+              onClick={() => {
+                setOpen(false);
+                event('start_reading', { from: 'nav_mobile', retake: Boolean(result) });
+              }}
+              className="mt-1"
+            >
+              {result ? 'Retake the reading' : 'Start the reading'}
             </Button>
           </div>
         </div>
