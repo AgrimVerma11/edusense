@@ -11,6 +11,7 @@ const Assessment = lazy(() => import('./pages/Assessment'));
 const Results = lazy(() => import('./pages/Results'));
 const Insights = lazy(() => import('./pages/Insights'));
 const About = lazy(() => import('./pages/About'));
+const Name = lazy(() => import('./pages/Name'));
 const Privacy = lazy(() => import('./pages/Privacy'));
 const Terms = lazy(() => import('./pages/Terms'));
 const NotFound = lazy(() => import('./pages/NotFound'));
@@ -64,6 +65,14 @@ export default function App() {
           element={
             <Suspense fallback={<PageLoader />}>
               <About />
+            </Suspense>
+          }
+        />
+        <Route
+          path="name"
+          element={
+            <Suspense fallback={<PageLoader />}>
+              <Name />
             </Suspense>
           }
         />
