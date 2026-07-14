@@ -1,7 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Sparkles, Clock, CalendarCheck, ListChecks } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  Sparkles,
+  Clock,
+  CalendarCheck,
+  ListChecks,
+  Compass,
+  Layers,
+  Rocket,
+} from 'lucide-react';
 import { STEPS } from '../config/schema';
 import { useAssessment } from '../context/AssessmentContext';
 import { predictStudent, wakeApi } from '../lib/api';
@@ -19,7 +29,14 @@ function isRequired(field) {
   return !field.optional && ['segmented', 'select', 'grade'].includes(field.type);
 }
 
-const GROUP_ICONS = { clock: Clock, calendar: CalendarCheck, checks: ListChecks };
+const GROUP_ICONS = {
+  clock: Clock,
+  calendar: CalendarCheck,
+  checks: ListChecks,
+  compass: Compass,
+  layers: Layers,
+  rocket: Rocket,
+};
 
 // A small subheading that splits a long step into themed sets, so a wall of
 // questions reads as a few short, related groups instead.

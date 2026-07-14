@@ -286,17 +286,29 @@ export const STEPS = [
     id: 'goals',
     title: 'Goals and growth',
     subtitle: 'Direction and momentum. The last few are optional.',
+    note: 'This is about where you are right now, not where you think you should be. Skip anything that does not apply.',
+    // Grouped into where you want to go, what you have built, and what you are
+    // doing about it. The groups and field order are presentation only; no value
+    // sent to the model changes.
+    groups: [
+      { id: 'direction', label: 'Direction', icon: 'compass' },
+      { id: 'foundation', label: 'Foundation', icon: 'layers' },
+      { id: 'momentum', label: 'Momentum', icon: 'rocket' },
+    ],
     fields: [
       {
         name: 'career_goal_clarity',
         label: 'How clear are you on your career direction?',
         type: 'segmented',
+        group: 'direction',
+        help: 'It is completely fine not to be sure yet.',
         options: ['Not clear', 'Somewhat clear', 'Very clear'],
       },
       {
         name: 'preparation_status',
         label: 'Where are you with preparing for that goal?',
         type: 'select',
+        group: 'direction',
         options: [
           'Thinking about it',
           'Planning to start soon',
@@ -304,63 +316,10 @@ export const STEPS = [
         ],
       },
       {
-        name: 'programming_foundation',
-        label: 'Your programming or technical foundation',
-        type: 'select',
-        options: [
-          'Limited knowledge, theoretical only',
-          'Basic knowledge, learning while practicing',
-          'Strong foundation in core concepts',
-        ],
-      },
-      {
-        name: 'projects_internships',
-        label: 'Projects or internships',
-        type: 'select',
-        options: [
-          'Not currently, but intend to in the future',
-          'Planning to start a project/internship soon',
-          'Yes, actively working on projects/internship',
-        ],
-      },
-      {
-        name: 'online_courses',
-        label: 'Online courses or certifications',
-        type: 'select',
-        optional: true,
-        options: [
-          'No, not interested',
-          'Not currently, but intend to in the future',
-          'Planning to enroll soon',
-          'Yes, currently enrolled in one or more courses/certifications',
-        ],
-      },
-      {
-        name: 'events_participation',
-        label: 'Do you take part in events or hackathons?',
-        type: 'select',
-        optional: true,
-        options: [
-          'Never participate in such events',
-          'Rarely participate, mostly observe',
-          'Occasionally participate in events',
-        ],
-      },
-      {
-        name: 'external_resources',
-        label: 'Do you use resources beyond class material?',
-        type: 'select',
-        optional: true,
-        options: [
-          'Never (Unaware or Not interested)',
-          'Rarely (Passive)',
-          'Occasionally (When needed)',
-        ],
-      },
-      {
         name: 'career_interest',
         label: 'Which area interests you most?',
         type: 'select',
+        group: 'direction',
         optional: true,
         options: [
           'AI / ML',
@@ -373,9 +332,35 @@ export const STEPS = [
         ],
       },
       {
+        name: 'programming_foundation',
+        label: 'Your programming or technical foundation',
+        type: 'select',
+        group: 'foundation',
+        help: 'Where you actually are, not where you are heading.',
+        options: [
+          'Limited knowledge, theoretical only',
+          'Basic knowledge, learning while practicing',
+          'Strong foundation in core concepts',
+        ],
+      },
+      {
+        name: 'strongest_asset',
+        label: 'Your strongest asset',
+        type: 'select',
+        group: 'foundation',
+        optional: true,
+        options: [
+          'Technical/Hard Skills (Coding, Math, Logic)',
+          'Creative/Design Skills (Innovation, UI/UX, Content)',
+          'Management/Execution (Planning, Organizing, Discipline)',
+          'Soft Skills (Communication, Leadership, Teamwork)',
+        ],
+      },
+      {
         name: 'skills_developing',
         label: 'What skills are you building right now?',
         type: 'select',
+        group: 'foundation',
         optional: true,
         options: [
           'Hard skills (programming, data analytics, technical skills)',
@@ -384,15 +369,51 @@ export const STEPS = [
         ],
       },
       {
-        name: 'strongest_asset',
-        label: 'Your strongest asset',
+        name: 'projects_internships',
+        label: 'Projects or internships',
         type: 'select',
+        group: 'momentum',
+        options: [
+          'Not currently, but intend to in the future',
+          'Planning to start a project/internship soon',
+          'Yes, actively working on projects/internship',
+        ],
+      },
+      {
+        name: 'online_courses',
+        label: 'Online courses or certifications',
+        type: 'select',
+        group: 'momentum',
         optional: true,
         options: [
-          'Technical/Hard Skills (Coding, Math, Logic)',
-          'Creative/Design Skills (Innovation, UI/UX, Content)',
-          'Management/Execution (Planning, Organizing, Discipline)',
-          'Soft Skills (Communication, Leadership, Teamwork)',
+          'No, not interested',
+          'Not currently, but intend to in the future',
+          'Planning to enroll soon',
+          'Yes, currently enrolled in one or more courses/certifications',
+        ],
+      },
+      {
+        name: 'events_participation',
+        label: 'Do you take part in events or hackathons?',
+        type: 'select',
+        group: 'momentum',
+        optional: true,
+        options: [
+          'Never participate in such events',
+          'Rarely participate, mostly observe',
+          'Occasionally participate in events',
+        ],
+      },
+      {
+        name: 'external_resources',
+        label: 'Do you use resources beyond class material?',
+        type: 'select',
+        group: 'momentum',
+        optional: true,
+        options: [
+          'Never (Unaware or Not interested)',
+          'Rarely (Passive)',
+          'Occasionally (When needed)',
         ],
       },
     ],
