@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, Clock, CalendarCheck, ListChecks } from 'lucide-react';
 import { STEPS } from '../config/schema';
 import { useAssessment } from '../context/AssessmentContext';
 import { predictStudent, wakeApi } from '../lib/api';
@@ -17,6 +17,38 @@ import ConsentGate from '../components/ConsentGate';
 // pre-filled inputs (numeric scales and age always hold a valid value).
 function isRequired(field) {
   return !field.optional && ['segmented', 'select', 'grade'].includes(field.type);
+}
+
+const GROUP_ICONS = { clock: Clock, calendar: CalendarCheck, checks: ListChecks };
+
+// A small subheading that splits a long step into themed sets, so a wall of
+// questions reads as a few short, related groups instead.
+function GroupHeader({ meta }) {
+  const Icon = GROUP_ICONS[meta.icon];
+  return (
+    <div className="flex items-center gap-2.5">
+      <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+        {Icon && <Icon size={16} />}
+      </span>
+      <span className="text-sm font-semibold text-ink-900">{meta.label}</span>
+    </div>
+  );
+}
+
+// Split a step's fields into contiguous groups by their `group` id. Steps with
+// no groups collapse to one ungrouped block, so they render exactly as before.
+function groupFields(step) {
+  const out = [];
+  step.fields.forEach((field) => {
+    const id = field.group ?? null;
+    const last = out[out.length - 1];
+    if (last && last.id === id) {
+      last.fields.push(field);
+    } else {
+      out.push({ id, meta: step.groups?.find((g) => g.id === id) || null, fields: [field] });
+    }
+  });
+  return out;
 }
 
 export default function Assessment() {
@@ -142,15 +174,21 @@ export default function Assessment() {
             <p className="mt-1.5 text-ink-500">{step.subtitle}</p>
           </div>
 
-          <div className="card space-y-7 p-6 sm:p-8">
-            {step.fields.map((field) => (
-              <Field
-                key={field.name}
-                field={field}
-                value={answers[field.name] ?? ''}
-                onChange={(value) => setAnswer(field.name, value)}
-                invalid={invalidFields.includes(field.name)}
-              />
+          <div className="card space-y-8 p-6 sm:p-8">
+            {step.note && <p className="text-xs leading-relaxed text-ink-400">{step.note}</p>}
+            {groupFields(step).map((grp) => (
+              <div key={grp.id ?? 'ungrouped'} className="space-y-7">
+                {grp.meta && <GroupHeader meta={grp.meta} />}
+                {grp.fields.map((field) => (
+                  <Field
+                    key={field.name}
+                    field={field}
+                    value={answers[field.name] ?? ''}
+                    onChange={(value) => setAnswer(field.name, value)}
+                    invalid={invalidFields.includes(field.name)}
+                  />
+                ))}
+              </div>
             ))}
           </div>
         </motion.div>

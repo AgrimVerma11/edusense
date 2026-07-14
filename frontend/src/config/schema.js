@@ -84,47 +84,65 @@ export const STEPS = [
     id: 'study',
     title: 'Study habits',
     subtitle: 'How you actually work, on a normal day.',
+    note: 'Answer for a normal week, not your best one. Honest answers give you a sharper read.',
+    // The seven questions split into three short, related sets so the step reads
+    // as a guided sequence rather than a wall. These groups and the field order
+    // are presentation only; the values sent to the model are unchanged.
+    groups: [
+      { id: 'time', label: 'Time and focus', icon: 'clock' },
+      { id: 'consistency', label: 'Consistency', icon: 'calendar' },
+      { id: 'followthrough', label: 'Follow-through', icon: 'checks' },
+    ],
     fields: [
       {
         name: 'study_hours_daily',
         label: 'On a typical day, how long do you actually study?',
         type: 'segmented',
+        group: 'time',
+        help: 'Count focused study, not time with the book open.',
         options: ['Less than 1 hour', '1–2 hours', 'More than 2 hours'],
-      },
-      {
-        name: 'study_consistency',
-        label: 'How consistent is your study routine?',
-        type: 'segmented',
-        options: ['Rarely', 'Sometimes', 'Mostly consistent'],
       },
       {
         name: 'focus_duration',
         label: 'How long can you stay focused in one sitting?',
         type: 'segmented',
+        group: 'time',
+        help: 'Before your attention drifts or you reach for your phone.',
         options: ['30–60 minutes', '1–2 hours', 'More than 2 hours'],
+      },
+      {
+        name: 'study_consistency',
+        label: 'How consistent is your study routine?',
+        type: 'segmented',
+        group: 'consistency',
+        options: ['Rarely', 'Sometimes', 'Mostly consistent'],
       },
       {
         name: 'revision_frequency',
         label: 'How often do you revise what you have learned?',
         type: 'segmented',
+        group: 'consistency',
         options: ['Never', 'Rarely', 'Few times a week', 'Daily'],
       },
       {
         name: 'attendance_percentage',
         label: 'Your class attendance',
         type: 'segmented',
+        group: 'followthrough',
         options: ['Less than 50%', '50% – 65%', '66% – 75%', '76% – 85%', 'Above 85%'],
       },
       {
         name: 'assignments_on_time',
         label: 'Do you submit assignments on time?',
         type: 'segmented',
+        group: 'followthrough',
         options: ['Rarely', 'Sometimes', 'Often', 'Always'],
       },
       {
         name: 'tasks_on_time',
         label: 'Do you finish the tasks you plan on time?',
         type: 'segmented',
+        group: 'followthrough',
         options: ['Rarely', 'Sometimes', 'Often', 'Always'],
       },
     ],
