@@ -1,22 +1,27 @@
-# EduSense
+# Firasa
 
-**Academic Risk Intelligence Platform**
+**Academic Risk Intelligence**
 
-[![Live](https://img.shields.io/badge/Live-edusense.agrimverma.dev-534AB7?style=flat-square)](https://edusense.agrimverma.dev)
+[![Live](https://img.shields.io/badge/Live-firasa.agrimverma.dev-534AB7?style=flat-square)](https://firasa.agrimverma.dev)
 ![Python](https://img.shields.io/badge/Python-3.11-3776AB?style=flat-square)
 ![React](https://img.shields.io/badge/React-18-20232A?style=flat-square)
 ![Flask](https://img.shields.io/badge/API-Flask-000000?style=flat-square)
 ![License](https://img.shields.io/badge/License-Proprietary-B00020?style=flat-square)
 
-EduSense reads a student's study habits and wellbeing and returns four linked
+Firasa reads a student's study habits and wellbeing and returns four linked
 outputs: a behavioural profile, an indicative academic trajectory, a risk level
 with a probability, and a ranked set of personalised, evidence-based actions to
 improve. It is designed, built, hardened, and deployed as a live product, not a
 notebook.
 
-**Live application: [edusense.agrimverma.dev](https://edusense.agrimverma.dev)**
+**Live application: [firasa.agrimverma.dev](https://firasa.agrimverma.dev)**
 
-Most early-warning tools stop at a prediction. EduSense identifies the specific
+> **All rights reserved.** This repository is public for demonstration and
+> evaluation only. Copying, reuse, or redistribution of any part of it, in whole
+> or in part, is not permitted without written permission. Full terms in
+> [LICENSE](LICENSE).
+
+Most early-warning tools stop at a prediction. Firasa identifies the specific
 behaviours driving a student's risk using two independent explainability methods,
 estimates how far changing each one would move the outcome, and turns that into a
 concrete plan the student can act on.
@@ -140,7 +145,7 @@ preprocessing and modelling stages in `ml/` and the notebooks in `notebooks/`.
 ## Project structure
 
 ```
-edusense/
+firasa/
   api/          Flask API: application factory, blueprints, request validation
   ml/           ML pipeline: config, preprocessing, clustering, regression,
                 classification, explainability, and the unified inference layer
@@ -156,7 +161,7 @@ edusense/
 
 ## Data and attribution
 
-EduSense uses four independent, publicly available student datasets, included for
+Firasa uses four independent, publicly available student datasets, included for
 reproducibility. Full sources, authors, and licenses are documented in
 [data/SOURCES.md](data/SOURCES.md). One source is a research dataset published on
 Zenodo under CC-BY-4.0. All credit for the datasets belongs to their original
@@ -191,10 +196,11 @@ authors.
 
 Designed and built by **Agrim Verma**.
 
-- Website: [edusense.agrimverma.dev](https://edusense.agrimverma.dev)
+- Website: [firasa.agrimverma.dev](https://firasa.agrimverma.dev)
 - GitHub: [AgrimVerma11](https://github.com/AgrimVerma11)
 - LinkedIn: [agrimverma11](https://www.linkedin.com/in/agrimverma11)
-- Contact: contact@edusense.agrimverma.dev
+- Substack: [Chronicles of this Soul](https://agrimverma.substack.com)
+- Contact: contact@firasa.agrimverma.dev
 
 ---
 
